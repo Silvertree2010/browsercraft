@@ -1,0 +1,41 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Browsercraft</title>
+<style>html,body{margin:0;height:100%;background:#000}canvas{width:100%;height:100%;display:block}#nm{position:fixed;inset:0;display:grid;place-items:center;background:#111;color:#eee;font:15px/1.4 system-ui,sans-serif}#nm form{display:grid;gap:10px;width:260px}#nm input,#nm button{font:inherit;padding:9px 11px;border-radius:6px;border:1px solid #444;background:#1c1c1c;color:#eee}#nm button{background:#3b7a3b;border-color:#3b7a3b;cursor:pointer}#st{position:fixed;left:8px;top:8px;font:13px/1.4 ui-monospace,monospace;color:#ddd;background:#000c;padding:6px 9px;white-space:pre-wrap;max-width:90vw;pointer-events:none}</style>
+<canvas id="c"></canvas>
+<div id="st"></div>
+<script type="module">
+const st = document.getElementById('st'), t0 = performance.now(), ln = [];
+let s = 'boot', p = '', fps = '';
+const put = (x) => { ln.push(x); if (ln.length > 8) ln.shift(); };
+const draw = () => { st.textContent = `${((performance.now() - t0) / 1000).toFixed(0)} s · ${s}${p ? ' · ' + p : ''}${fps ? ' · ' + fps + ' fps' : ''}\nwebgpu: ${navigator.gpu ? 'yes' : 'NO'} · isolated: ${self.crossOriginIsolated ? 'yes' : 'NO'}` + (ln.length ? '\n' + ln.join('\n') : ''); };
+const dbg = new URLSearchParams(location.search).has('dbg');
+const draw0 = draw;
+setInterval(() => { st.hidden = !dbg && !ln.length; if (!st.hidden) draw0(); }, 500); st.hidden = !dbg;
+addEventListener('error', e => { put('ERROR ' + e.message); draw(); });
+addEventListener('unhandledrejection', e => { put('ERROR ' + (e.reason && e.reason.message || e.reason)); draw(); });
+const q = new URLSearchParams(location.search);
+let args;
+if (q.has('ask') || q.has('name')) {
+  let nm = q.get('name');
+  try { nm = nm || localStorage.getItem('bc-name'); } catch {}
+  if (!nm || !/^[A-Za-z0-9_]{3,16}$/.test(nm)) nm = await new Promise(res => {
+    const d = document.createElement('div');
+    d.id = 'nm';
+    d.innerHTML = '<form><b>Browsercraft</b><label for="ni">Player name</label><input id="ni" required pattern="[A-Za-z0-9_]{3,16}" maxlength="16" placeholder="3-16 letters, digits or _" autofocus><button>Play</button></form>';
+    document.body.append(d);
+    d.querySelector('form').onsubmit = e => { e.preventDefault(); const v = d.querySelector('input').value; d.remove(); res(v); };
+  });
+  try { localStorage.setItem('bc-name', nm); } catch {}
+  args = ['--username', nm, '--accessToken', '0', '--version', '26.3', '--gameDir', '/mc', '--assetsDir', '/mc/assets', '--assetIndex', '34'];
+}
+try {
+  const { boot } = await import('./boot.js');
+  boot(document.getElementById('c'), { args, onmessage: m => {
+    if (m.fps !== undefined) fps = m.fps.toFixed(1);
+    if (m.progress) p = typeof m.progress === 'object' ? JSON.stringify(m.progress) : String(m.progress);
+    if (m.status) { s = m.status; console.log('[worker]', m); if (m.error) put(m.error.split('\n').slice(0, 4).join('\n')); }
+    if (m.status === 'running') 0;
+  } });
+} catch (e) { put('ERROR ' + e.message); }
+</script>

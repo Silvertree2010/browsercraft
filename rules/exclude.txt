@@ -1,0 +1,9 @@
+^$
+log4j-
+icu4j-
+jna-
+lwjgl-opengl
+lwjgl-vma
+lwjgl-shaderc
+lwjgl-spvc
+java-objc-bridge

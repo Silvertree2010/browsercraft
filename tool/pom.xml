@@ -1,0 +1,14 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>bc</groupId><artifactId>tool</artifactId><version>0</version>
+  <properties><tv>0.16.0</tv><asm>9.10.1</asm><maven.compiler.release>25</maven.compiler.release><project.build.sourceEncoding>UTF-8</project.build.sourceEncoding></properties>
+  <dependencies>
+    <dependency><groupId>org.ow2.asm</groupId><artifactId>asm</artifactId><version>${asm}</version></dependency>
+    <dependency><groupId>org.ow2.asm</groupId><artifactId>asm-tree</artifactId><version>${asm}</version></dependency>
+    <dependency><groupId>org.ow2.asm</groupId><artifactId>asm-analysis</artifactId><version>${asm}</version></dependency>
+    <dependency><groupId>org.teavm</groupId><artifactId>teavm-tooling</artifactId><version>${tv}</version></dependency>
+    <dependency><groupId>org.teavm</groupId><artifactId>teavm-classlib</artifactId><version>${tv}</version></dependency>
+    <dependency><groupId>org.teavm</groupId><artifactId>teavm-jso-apis</artifactId><version>${tv}</version></dependency>
+    <dependency><groupId>org.teavm</groupId><artifactId>teavm-jso-impl</artifactId><version>${tv}</version></dependency>
+  </dependencies>
+</project>

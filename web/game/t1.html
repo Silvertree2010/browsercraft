@@ -1,0 +1,11 @@
+<!doctype html><meta charset="utf-8"><canvas id="c" width="320" height="200"></canvas>
+<script type="module">
+const w = new Worker(URL.createObjectURL(new Blob([`
+onmessage = async (e) => {
+  const ad = await navigator.gpu?.requestAdapter();
+  const r = await navigator.storage.getDirectory();
+  postMessage('gpu=' + !!ad + ' info=' + (ad && JSON.stringify(ad.info)) + ' opfs=' + !!r + ' sab=' + (typeof SharedArrayBuffer) + ' coi=' + self.crossOriginIsolated + ' raf=' + typeof requestAnimationFrame);
+};`], { type: 'text/javascript' })));
+w.onmessage = e => console.log(e.data);
+w.postMessage(1);
+</script>

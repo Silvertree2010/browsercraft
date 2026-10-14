@@ -1,0 +1,12 @@
+import fs from 'fs';
+const m = await WebAssembly.instantiate(fs.readFileSync('target/wasm32-unknown-unknown/release/naga_bc.wasm'), {});
+const x = m.instance.exports;
+const src = fs.readFileSync(process.argv[2], 'utf8');
+const b = new TextEncoder().encode(src);
+const p = x.alloc(b.length);
+new Uint8Array(x.memory.buffer, p, b.length).set(b);
+const r = x.conv(p, b.length, Number(process.argv[3]));
+const rp = Number(r >> 32n), rl = Number(r & 0xffffffffn);
+const out = new TextDecoder().decode(new Uint8Array(x.memory.buffer, rp, rl));
+x.free(rp, rl); x.free(p, b.length);
+console.log(out.slice(0, 600));

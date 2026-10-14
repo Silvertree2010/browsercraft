@@ -1,0 +1,14 @@
+services:
+  browsercraft:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "8090:8090"
+    environment:
+      MS_CLIENT_ID: ${MS_CLIENT_ID:-}
+      ADMIN_UUIDS: ${ADMIN_UUIDS:-}
+      BAKE_CMD: ${BAKE_CMD:-}
+    volumes:
+      - ./web:/app/web:ro
+      - ./data:/data
+      - ./state:/state
